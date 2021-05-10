@@ -1,4 +1,4 @@
-unit CommunicationThread;
+ï»¿unit CommunicationThread;
 
 interface
 
@@ -54,7 +54,7 @@ type
     TheLineIndex : integer;
     //FRXTele      : array [0..63] of char;
     //FRXTeleLen   : integer;
-    FRXBuffer    : array [0..63] of char;
+    FRXBuffer    : array [0..63] of AnsiChar;
     FRXBufferLen : integer;
     FReceiving   : Boolean;
     FRollover    : Boolean;
@@ -63,8 +63,8 @@ type
     procedure Execute; override;
 
     function  XmitTeleLow (Tele : String; waitack : boolean = true) : Boolean;
-    function  XmitTele    (Adr : Char; Tele : String; Retry : integer = 5) : Boolean;
-    function  XmitString  (Adr : Char; LineNr: Byte; S: String; Retry : integer = 5) : Boolean;
+    function  XmitTele    (Adr : AnsiChar; Tele : String; Retry : integer = 5) : Boolean;
+    function  XmitString  (Adr : AnsiChar; LineNr: Byte; S: String; Retry : integer = 5) : Boolean;
     function  PaintOnLED (index : integer; addr : Byte; Line : Byte; MaxRetry : Boolean = True) : Boolean;
 
     function  GetAnzeigeOk (index : Integer) : Boolean;
@@ -112,11 +112,11 @@ const
 
 
 
-{ Wichtig: Methoden und Eigenschaften von Objekten in der VCL können nur in einer
+{ Wichtig: Methoden und Eigenschaften von Objekten in der VCL kï¿½nnen nur in einer
   Methode namens Synchronize verwendet werden; Beispiel:
       Synchronize(UpdateCaption);
 
-  wobei UpdateCaption so aussehen könnte:
+  wobei UpdateCaption so aussehen kï¿½nnte:
 
     procedure TCommunicationThread.UpdateCaption;
     begin
@@ -238,7 +238,7 @@ end;
 
 function TCommunicationThread.ProcessRx : Boolean;
 var
-  lRxBuffer : array [0..63] of char;
+  lRxBuffer : array [0..63] of AnsiChar;
   lRxLength : Integer;
   RxI   : integer;
 begin
@@ -567,7 +567,7 @@ begin
   end;
 end;
 
-function TCommunicationThread.XmitTele (Adr : Char; Tele : String; retry : integer) : Boolean;
+function TCommunicationThread.XmitTele (Adr : AnsiChar; Tele : String; retry : integer) : Boolean;
 var
   ToXmit : string;
 begin
@@ -582,15 +582,15 @@ begin
   end;
 end;
 
-function TCommunicationThread.XmitString  (Adr : Char; LineNr: Byte; S: String; Retry : integer) : Boolean;
+function TCommunicationThread.XmitString  (Adr : AnsiChar; LineNr: Byte; S: String; Retry : integer) : Boolean;
 var
-  Line : Char;
-  Fx   : Char;
+  Line : AnsiChar;
+  Fx   : AnsiChar;
 begin
   //PrintText (Format ('XmitString: %d, %d, %s', [Byte (adr), LineNr, S]));
-  Line := Char (LineNr + $30);
+  Line := AnsiChar (LineNr + $30);
   FX   := CHar ($20);
-  Result := XMitTele (Char (Adr), #$30 + Line + FX + S, Retry);
+  Result := XMitTele (AnsiChar (Adr), #$30 + Line + FX + S, Retry);
 end;
 
 function TCommunicationThread.PaintOnLED (index : Integer; addr : Byte; Line : Byte; MaxRetry : boolean) : Boolean;
@@ -610,7 +610,7 @@ begin
   end;
   PrintText (Format ('Paint: %d, %d, %d (%s)', [index, addr, Line, ToPaint]));
   PrintLine (addr * 256 + Line, ToPaint);
-  result := XmitString (char (addr), Line, ToPaint);
+  result := XmitString (AnsiChar (addr), Line, ToPaint);
   if FAbort then
   begin
     result := true;
